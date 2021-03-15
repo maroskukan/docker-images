@@ -11,6 +11,10 @@
     - [Dockerfile](#dockerfile)
   - [Authoring Docker Images](#authoring-docker-images)
     - [FROM Instruction](#from-instruction)
+    - [ENV Instruction](#env-instruction)
+    - [ARG Instruction](#arg-instruction)
+    - [RUN Instruction](#run-instruction)
+    - [COPY Instruction](#copy-instruction)
 
 ## Introduction
 
@@ -23,6 +27,7 @@ Docker image provides the following key features:
 ## Documentation
 - [Format command and log output](https://docs.docker.com/config/formatting/)
 - [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+- [Install python package in Dockerfile](https://stackoverflow.com/questions/50333650/install-python-package-in-docker-file/50339177)
 
 
 ## Building an image
@@ -278,9 +283,67 @@ docker image inspect --format '{{.RepoDigests}}' debian
 
 Besides refereing to an base image there is a special keyword, `scratch` that indicates build with no base image.
 
+### ENV Instruction
 
+The `ENV` instruction declares an environment variable. It must be assigned a value and the scope applies from point of declaration. Variable and its value persist into derived container.
+```dockerfile
+ENV <variable> <value>
+ENV <variable=value>
+```
 
+The following two declarations have same effect, but latter minizes number of layers in the image.
+```dockerfile
+ENV MONGO_MAJOR 3.4
+ENV MONGO_VERSION 3.4.4
+ENV MONGO_PACKAGE mongodb-org
+```
 
+```dockerfile
+ENV MONGO_MAJOR=3.4           \
+    MONG_VERSION=3.4.4        \
+    MONGO_PACKAGE=mongodb-org
+```
 
+### ARG Instruction
 
+The `ARG` instruction defines variable passed on command line. It can optionally, define a default value. Variable can be consumed from point of definition and is does not persist into derived container. Altered build args break build cache at point consumed.
 
+```dockerfile
+ARG <variable[=default value]>
+```
+
+### RUN Instruction
+
+The `RUN` instruction executes command inside container. It is the recommended way for adding remote artifacts (Updates, Packages) to image. There are two forms of syntax:
+- shell - executes command in shell
+- exec - used when filesystem is devoid of shell
+
+Build cache breaks only if instruction alters.
+```dockerfile
+RUN <command parameter ...>
+RUN <["executable", "parameter", ...]>
+```
+
+To mitigate excessive layers created by build process form following instructions:
+```dockerfile
+FROM debian
+RUN apt-get update
+RUN apt-get install -y wget
+RUN rm -rf /var/lib/apt/lists/*
+```
+
+Can be optimized by running all three instructions in single layer:
+```dockerfile
+FROM debian
+RUN apt-get update              && \
+    apt-get install -y wget     && \
+    rm -rf /var/lib/apt/lists/*
+```
+### COPY Instruction
+
+The `COPY` instruction copies files from build context to image. It is the recommended way for adding local artifacts to image. Multiple sourcess can be specified in one instruction. Sources can contain globbing characters. Destination can be relative or absolute path. Content is added with a UID and GID of 0
+
+```dockerfile
+COPY <src> ... <dst>
+COPY ["<src>" ... "<dst>"]
+```
