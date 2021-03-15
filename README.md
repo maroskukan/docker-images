@@ -9,6 +9,8 @@
     - [Invoking build process](#invoking-build-process)
     - [Build Context](#build-context)
     - [Dockerfile](#dockerfile)
+  - [Authoring Docker Images](#authoring-docker-images)
+    - [FROM Instruction](#from-instruction)
 
 ## Introduction
 
@@ -17,8 +19,11 @@ Docker image provides the following key features:
 - Metadata, such as environment variables, exposed ports
 - Command, which process gets executed when starting a new container
 
+
 ## Documentation
 - [Format command and log output](https://docs.docker.com/config/formatting/)
+- [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+
 
 ## Building an image
 
@@ -35,6 +40,7 @@ Docker instructions
 - Used for authoring images
 - Makes use of docker build command
 - Can produce highly optimized images
+
 
 ## Committing container to image
 
@@ -241,6 +247,39 @@ Dockerfile is a text file. It's default name is `Dockerfile`, and is located at 
 Instructions are executed in containers in order to create:
 - Filesystem content
 - Active or passive metadata content
+
+
+## Authoring Docker Images
+
+### FROM Instruction
+
+To author a custom docker image, start by selecing a base image using `FROM` instruction. This must be defined as the first instruction in Dockerfile. 
+
+The argument must define a repository, but tag is optional.
+```dockerfile
+FROM <repository>[<:tag>]
+FROM <repository>[<@digest>]
+```
+
+Digest refers to image manifest digest, can can be seen when pull an image from registry and inspecting the image locally.
+```bash
+# Pulling the image
+docker pull debian:latest
+latest: Pulling from library/debian
+e22122b926a1: Pull complete 
+Digest: sha256:9d4ab94af82b2567c272c7f47fa1204cd9b40914704213f1c257c44042f82aac
+Status: Downloaded newer image for debian:latest
+docker.io/library/debian:latest
+
+# Inspecting the image
+docker image inspect --format '{{.RepoDigests}}' debian
+[debian@sha256:9d4ab94af82b2567c272c7f47fa1204cd9b40914704213f1c257c44042f82aac]
+```
+
+Besides refereing to an base image there is a special keyword, `scratch` that indicates build with no base image.
+
+
+
 
 
 
