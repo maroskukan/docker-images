@@ -3,8 +3,12 @@
   - [Introduction](#introduction)
   - [Documentation](#documentation)
   - [Building an image](#building-an-image)
-  - [Commiting to a container](#commiting-to-a-container)
+  - [Committing container to image](#committing-container-to-image)
     - [Flattening a Docker Image](#flattening-a-docker-image)
+  - [Building Docker Images](#building-docker-images-1)
+    - [Invoking build process](#invoking-build-process)
+    - [Build Context](#build-context)
+    - [Dockerfile](#dockerfile)
 
 ## Introduction
 
@@ -32,7 +36,7 @@ Docker instructions
 - Makes use of docker build command
 - Can produce highly optimized images
 
-## Commiting to a container
+## Committing container to image
 
 Start by downloading a base image from Docker Hub. Verify that is available in local cache.
 ```bash
@@ -199,6 +203,45 @@ docker image history my-image:1.1
 IMAGE          CREATED          CREATED BY   SIZE      COMMENT
 940be2bb1a73   26 minutes ago                49.1MB    Imported from -
 ```
+
+
+## Building Docker Images
+
+There are number of ingrediences that are needed to build an authored Docker image:
+- Base image
+- Dockerfile
+- Artifacts
+
+### Invoking build process
+
+Docker image build is invoked by using `docker image build` command. You define the `tag` and the build context `.` (current working directory) which is send as an archive from client to daemon. The first build step in `Dockerfile` references the base image, for example `FROM alpine:latest`.
+```bash
+# Located Dockerfile
+cd examples/lighttpd
+# Build process
+docker image build -t my_image .
+```
+
+Each build step uses image produced by the previous step. A command is executed in a container derived from the image. The container is commited to a new image, before it is removed.
+
+If all steps are successful, the image created in the final step is tagged with the name we provided. Intermediate images are retained to aid future builds.
+
+### Build Context
+
+Docker client initializes the build but Docker daemon performs the build. Ideally, local build contexts should be organizaed into projects. 
+
+Pleace the Dockerfile in the root directory of each project and organize other build artifacts within the project directory.
+
+Use `.dockerignore` file to exclude unnecessary content form being sent to daemon.
+
+### Dockerfile
+
+Dockerfile is a text file. It's default name is `Dockerfile`, and is located at the root of the build context. It provides series of instructions for image build process.
+
+Instructions are executed in containers in order to create:
+- Filesystem content
+- Active or passive metadata content
+
 
 
 
