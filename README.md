@@ -18,6 +18,8 @@
     - [CMD Instruction](#cmd-instruction)
     - [ENTRYPOINT Instruction](#entrypoint-instruction)
     - [HEALTHCHECK Instruction](#healthcheck-instruction)
+    - [ONBUILD Instruction](#onbuild-instruction)
+    - [Metadata Instructions](#metadata-instructions)
 
 ## Introduction
 
@@ -543,4 +545,24 @@ watch -n 1 "docker container ls"
 docker system events --since 30m --filter event=health_status
 ```
 
+### ONBUILD Instruction
+
+The `ONBUILD` instruction provides a means to impose method on image use. It defers execution of instruction. Triggers is added to te image's metadata. Image is used as base image for similar images. For all instructions except `FROM` and `ONBUILD`.
+
+```dockerfile
+ONBUILD <instruction>
+```
+
+### Metadata Instructions
+
+There are number of instructions which add additional medata to the image.
+
+| **Instruction** | **Purpose** |
+| --------------- | ----------- |
+| EXPOSE | Specifies TCP/UDP ports for container |
+| LABEL | Adds a static label to the image |
+| STOPSIGNAL | Defines the signal to stop the container's process |
+| USER | Sets the container's user |
+| VOLUME | Specifies a mount point for persistent data |
+| WORKDIR | Sets the working directory |
 
