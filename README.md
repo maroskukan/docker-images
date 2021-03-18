@@ -22,6 +22,7 @@
     - [Metadata Instructions](#metadata-instructions)
   - [Creating Nginx Docker Image](#creating-nginx-docker-image)
     - [Planning](#planning)
+    - [Writing Docker File](#writing-docker-file)
 
 ## Introduction
 
@@ -592,6 +593,7 @@ We need to start by planning the docker image content. The following steps will 
 5. Serve
    1. Execution
 
+### Writing Docker File
 
 ```dockerfile
 FROM alpine:3.13.2
