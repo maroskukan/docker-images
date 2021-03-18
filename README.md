@@ -15,6 +15,8 @@
     - [ARG Instruction](#arg-instruction)
     - [RUN Instruction](#run-instruction)
     - [COPY Instruction](#copy-instruction)
+    - [CMD Instruction](#cmd-instruction)
+    - [ENTRYPOINT Instruction](#entrypoint-instruction)
 
 ## Introduction
 
@@ -347,3 +349,24 @@ The `COPY` instruction copies files from build context to image. It is the recom
 COPY <src> ... <dst>
 COPY ["<src>" ... "<dst>"]
 ```
+
+### CMD Instruction
+
+The `CMD` instruction is used to define a default command. Or provide default parameters to `ENTRYPOINT` instruction. Two forms of syntax: shell and exec (preferred). Exec form used for default parameters. Command line arguments override CMD.
+
+```dockerfile
+CMD <command parameter ...> or <parameter parameter ...>
+CMD ["<command>", "<parameter>", ...]
+```
+
+### ENTRYPOINT Instruction
+
+The `ENTRYPOINT` instruction is used to define executable. Employed to constrain what is executed. Command line arguments appended. Two forms of syntax: shell and exec (preferred). Shell form limits control using Linux signals.
+
+```dockerfile
+ENTRYPOINT <executable paramater ...>
+ENTRYPOINT ["<executable>", "<parameter>", ...]
+```
+
+
+
