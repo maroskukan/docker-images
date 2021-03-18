@@ -359,6 +359,59 @@ CMD <command parameter ...> or <parameter parameter ...>
 CMD ["<command>", "<parameter>", ...]
 ```
 
+An example `Dockerfile` that uses `CMD` instructiction is below:
+```dockerfile
+FROM debian:buster-slim
+
+RUN apt-get update                             && \
+    apt-get install -y --no-install-recommends    \
+        cowsay                                    \
+        screenfetch                            && \
+        rm -rf /var/lin/apt/lists/*
+
+ENV PATH "$PATH:/usr/games"
+
+CMD ["cowsay", "To improve is to change; to be perfect is to change often"]
+```
+
+Build the image and run a container.
+```bash
+docker build -t demo .
+docker container run --rm demo
+ ________________________________________
+/ To improve is to change; to be perfect \
+\ is to change often                     /
+ ----------------------------------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+```
+
+To overide the argument in `CMD` instruction, pass a parameter at the end of docker container run command.
+```bash
+docker container run --rm demo screenfetch -E
+         _,met$$$$$gg.           root@46a5f3cbe996
+      ,g$$$$$$$$$$$$$$$P.        OS: Debian 
+    ,g$$P""       """Y$$.".      Kernel: x86_64 Linux 4.19.128-microsoft-standard
+   ,$$P'              `$$$.      Uptime: 1d 10h 48m
+  ',$$P       ,ggs.     `$$b:    Packages: 99
+  `d$$'     ,$P"'   .    $$$     Shell: 
+   $$P      d$'     ,    $$P     CPU: Intel Core i7-9850H @ 12x 2.592GHz
+   $$:      $$.   -    ,d$$'     GPU: 
+   $$\;      Y$b._   _,d$P'      RAM: 1992MiB / 25510MiB
+   Y$$.    `.`"Y$$$$P"'         
+   `$$b      "-.__              
+    `Y$$                        
+     `Y$$.                      
+       `$$b.                    
+         `Y$$b.                 
+            `"Y$b._             
+                `""""           
+                              
+```
+
 ### ENTRYPOINT Instruction
 
 The `ENTRYPOINT` instruction is used to define executable. Employed to constrain what is executed. Command line arguments appended. Two forms of syntax: shell and exec (preferred). Shell form limits control using Linux signals.
@@ -368,5 +421,100 @@ ENTRYPOINT <executable paramater ...>
 ENTRYPOINT ["<executable>", "<parameter>", ...]
 ```
 
+Using the same example from previous section, replace `CMD` instruction with `ENTRYPOINT` instuction.
 
+```dockerfile
+FROM debian:buster-slim
 
+RUN apt-get update                             && \
+    apt-get install -y --no-install-recommends    \
+        cowsay                                    \
+        screenfetch                            && \
+        rm -rf /var/lin/apt/lists/*
+
+ENV PATH "$PATH:/usr/games"
+
+#CMD ["cowsay", "To improve is to change; to be perfect is to change often"]
+ENTRYPOINT ["cowsay"]
+```
+
+Rebuild the image and run a container.
+```bash
+docker build -t demo .
+docker container run --rm demo
+ __
+<  >
+ --
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+```
+
+Lets try some arguments. You can see that we can pass thme to `screenfecth` directly.
+```bash
+docker container run --rm demo -f tux "If you're going through hell, keep going"
+ ____________________________________
+/ If you're going through hell, keep \
+\ going                              /
+ ------------------------------------
+   \
+    \
+        .--.
+       |o_o |
+       |:_/ |
+      //   \ \
+     (|     | )
+    /'\_   _/`\
+    \___)=(___/
+```
+
+However, when you try to execute any other program than `cowsay`, you are not able to do so.
+```bash
+docker container run --rm demo screenfetch -D
+ ________________
+< screenfetch -D >
+ ----------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     || 
+```
+
+Instructions like `CMD` and `ENTRYPOINT` can work together, for example, when specifying default arguments for programe defined in entrypoint:
+```dockerfile
+FROM debian:buster-slim
+
+RUN apt-get update                             && \
+    apt-get install -y --no-install-recommends    \
+        cowsay                                    \
+        screenfetch                            && \
+        rm -rf /var/lin/apt/lists/*
+
+ENV PATH "$PATH:/usr/games"
+
+CMD ["-f", "tux", "Default is the easiest choice"]
+ENTRYPOINT ["cowsay"]
+```
+
+Rebuild the image and run a container.
+```bash
+docker build -t demo .
+docker container run --rm demo
+```bash
+
+ _______________________________
+< Default is the easiest choice >
+ -------------------------------
+   \
+    \
+        .--.
+       |o_o |
+       |:_/ |
+      //   \ \
+     (|     | )
+    /'\_   _/`\
+    \___)=(___/
+```
