@@ -17,6 +17,7 @@
     - [COPY Instruction](#copy-instruction)
     - [CMD Instruction](#cmd-instruction)
     - [ENTRYPOINT Instruction](#entrypoint-instruction)
+    - [HEALTHCHECK Instruction](#healthcheck-instruction)
 
 ## Introduction
 
@@ -518,3 +519,28 @@ docker container run --rm demo
     /'\_   _/`\
     \___)=(___/
 ```
+
+### HEALTHCHECK Instruction
+
+The `HEALTHCHECK` instruction provides a means of defining a check the container process. It defines a command to test container health. Command runs periodically inside container. Options, for interval, timeout and retries. Health status is available via the Docker CLI. 
+
+When a health check fails, an event is raised.
+
+```dockerfile
+HEALTHCHECK [options] CMD <command>
+HEALTHCHECK NONE
+```
+
+The following health check tries to curl a webpage hosted at localhost every 3 seconds. If server does not respond within 2 seconds an exit code 1 is returned, triggering a health checkfail.
+```dockerfile
+HEALTHCHECK --interval=3s CMD curl --fail -m 2 http://localhost:80/ || exit 1
+```
+
+Start a docker container and then simulate a failure of loopback interface
+```bash
+docker exec -it nginx sh -c "sleep 10; ip link set lo down; sleep 15; ip link set lo up" &
+watch -n 1 "docker container ls" 
+docker system events --since 30m --filter event=health_status
+```
+
+
