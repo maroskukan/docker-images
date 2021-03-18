@@ -23,6 +23,7 @@
   - [Creating Nginx Docker Image](#creating-nginx-docker-image)
     - [Planning](#planning)
     - [Writing Docker File](#writing-docker-file)
+    - [Building an Image](#building-an-image-1)
 
 ## Introduction
 
@@ -36,7 +37,7 @@ Docker image provides the following key features:
 - [Format command and log output](https://docs.docker.com/config/formatting/)
 - [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 - [Install python package in Dockerfile](https://stackoverflow.com/questions/50333650/install-python-package-in-docker-file/50339177)
-
+- [View logs for a container or service](https://docs.docker.com/config/containers/logging/)
 
 ## Building an image
 
@@ -652,5 +653,34 @@ EXPOSE 80
 # Define entrypoint and default parameters
 ENTRYPOINT ["/usr/local/nginx/sbin/nginx"]
 CMD ["-g", "daemon off;"]
+```
+
+### Building an Image
+
+Once you build an image from above Dockerfile, you end up with an image of size 6.89MB. 
+
+```bash
+docker build -t nginx:1.18.0 .
+# Verify the Size
+docker image ls nginx:1.18.0
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+nginx        1.18.0    f417cc8f0036   11 minutes ago   6.89MB
+
+# Start container from the image
+docker run -d -p 8080:80 nginx:1.18.0
+e5def54ebe3610ff93bb006e62de3fdc1861654b03223ed413e68ab3a8880a7d
+
+# Verify application
+curl -I localhost:8080
+HTTP/1.1 200 OK
+Server: nginx/1.18.0
+Date: Thu, 18 Mar 2021 18:56:00 GMT
+Content-Type: text/html
+Connection: keep-alive
+
+# Verify application logs
+docker logs $(docker ps -q)
+172.17.0.1 - - [18/Mar/2021:18:55:32 +0000] "GET / HTTP/1.1" 200 22951 "-" "curl/7.68.0"
+172.17.0.1 - - [18/Mar/2021:18:56:00 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.68.0"
 ```
 
