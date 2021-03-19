@@ -24,6 +24,7 @@
     - [Planning](#planning)
     - [Writing Docker File](#writing-docker-file)
     - [Building an Image](#building-an-image-1)
+    - [Multi-stage Image Builds](#multi-stage-image-builds)
 
 ## Introduction
 
@@ -657,7 +658,7 @@ CMD ["-g", "daemon off;"]
 
 ### Building an Image
 
-Once you build an image from above Dockerfile, you end up with an image of size 6.89MB. 
+Once you build an image from above Dockerfile, you end up with an image of size 6.89MB.
 
 ```bash
 docker build -t nginx:1.18.0 .
@@ -683,4 +684,29 @@ docker logs $(docker ps -q)
 172.17.0.1 - - [18/Mar/2021:18:55:32 +0000] "GET / HTTP/1.1" 200 22951 "-" "curl/7.68.0"
 172.17.0.1 - - [18/Mar/2021:18:56:00 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.68.0"
 ```
+
+### Multi-stage Image Builds
+
+In summary, the produced Nginx image is very optimal in size and number of layers it uses. If you examine the Dockerfile however, it is hard to maintain and if just one command fails in `RUN` instruction the whole build fails and you need to start over.
+
+Therefore, one solution is use **Multi-stage Image Build** which separates the images by their purpose:
+- Build Image - creates the artifacts necessary for the service
+- Service Image - serves the service, making use of the build artifacts
+
+Multi-sate builds use multiple `FROM` instructions. `COPY` instructions can reference content from a previous build stage and a build stage is referenced by index, or by a supplied name, for example:
+
+```dockerfile
+FROM alpine:3.13.2 as build
+
+# Define build argument for version
+ARG VERSION=1.18.0
+
+# Output omitted
+
+FROM scratch
+
+# Cusomize static content and configuration
+COPY --from=build /usr/local/nginx /usr/local/nginx
+```
+
 
