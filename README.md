@@ -709,4 +709,101 @@ FROM scratch
 COPY --from=build /usr/local/nginx /usr/local/nginx
 ```
 
+We can apply this methodology to the Nginx Dockerfile. Notice how we separated the build from serve and also used separate `RUN` instructions to further divide the build process.
 
+```dockerfile
+FROM alpine:3.13.2 as build
+
+# Define build argument and default value for version
+ARG VERSION=1.18.0
+
+# Install build tools, libraries, and utilities
+RUN apk add --no-cache --virtual .build-deps                          \
+        build-base                                                    \
+        gnupg                                                         \
+        pcre-dev                                                      \
+        wget                                                          \
+        zlib-dev                                                      \
+        zlib-static
+
+# Retrieve, verify and unpact Nginx source
+RUN set -x                                                         && \
+    cd /tmp                                                        && \
+    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys            \
+        B0F4253373F8F6F510D42178520A9993A1C052F8                   && \
+    wget -q https://nginx.org/download/nginx-${VERSION}.tar.gz     && \
+    wget -q https://nginx.org/download/nginx-${VERSION}.tar.gz.asc && \
+    gpg --verify nginx-${VERSION}.tar.gz.asc                       && \
+    tar -xf nginx-${VERSION}.tar.gz                                
+
+WORKDIR /tmp/nginx-${VERSION}
+
+# Build and install nginx
+RUN ./configure                                                       \
+        --with-ld-opt="-static"                                       \
+        --with-http_sub_module                                     && \
+    make install                                                   && \
+    strip /usr/local/nginx/sbin/nginx
+   
+# Symlink access and error logs to /dev/stdout and /dev/stderr,
+# in order to make use of Docker's logging mechanism
+RUN ln -sf /dev/stdout /usr/local/nginx/logs/access.log            && \
+    ln -sf /dev/stderr /usr/local/nginx/logs/error.log
+
+FROM scratch
+
+# Customise static content, and configuration
+# passwd and group file are required for Nginx worker processes
+COPY --from=build /etc/passwd /etc/group /etc/
+COPY --from=build /usr/local/nginx /usr/local/nginx
+COPY index.html /usr/local/nginx/html/
+COPY nginx.conf /usr/local/nginx/conf/
+
+# Change default stop signal from SIGTERM to SIGQUIT
+STOPSIGNAL SIGQUIT
+
+# Expose port
+EXPOSE 80
+
+# Define entrypoint and default parameters
+ENTRYPOINT ["/usr/local/nginx/sbin/nginx"]
+CMD ["-g", "daemon off;"]
+```
+
+Once you updated the Dockerfile, initiate the buld process using `docker build` command.
+```bash
+docker build -t nginx:1.18.0 .
+# Output omitted
+[+] Building 344.2s (7/14)                                                                               
+ => [internal] load build definition from Dockerfile                                                0.0s
+ => => transferring dockerfile: 2.30kB                                                              0.0s
+ => [internal] load .dockerignore                                                                   0.0s
+ => => transferring context: 2B                                                                     0.0s
+ => [internal] load metadata for docker.io/library/alpine:3.13.2                                    2.2s
+ => [auth] library/alpine:pull token for registry-1.docker.io                                       0.0s
+ => [internal] load build context                                                                   0.0s
+ => => transferring context: 63B                                                                    0.0s
+ => CACHED [build 1/6] FROM docker.io/library/alpine:3.13.2@sha256:a75afd8b57e7f34e4dad8d65e2c7ba2  0.0s
+ => [build 2/6] RUN apk add --no-cache --virtual .build-deps                                  bui  26.5s
+ => [build 3/6] RUN set -x                                                         &&     cd /tm  315.3s
+ => => # gpg:                using RSA key 520A9993A1C052F8                                              
+ => => # gpg: Good signature from "Maxim Dounin <mdounin@mdounin.ru>" [unknown]                          
+ => => # gpg: WARNING: This key is not certified with a trusted signature!                               
+ => => # gpg:          There is no indication that the signature belongs to the owner.                   
+ => => # Primary key fingerprint: B0F4 2533 73F8 F6F5 10D4  2178 520A 9993 A1C0 52F8                     
+ => => # + tar -xf nginx-1.18.0.tar.gz                                                       
+ # Output omitted
+```
+
+Now verify image size, run a new container and verify the application.
+
+```bash
+# Verify image size
+docker image ls nginx:1.18.0
+# Run a container
+docker container run -d -p 8080:80 nginx:1.18.0
+# Verify application
+curl -I localhost:8080
+# Verify container logs
+docker logs $(docker ps -q)
+``` 
