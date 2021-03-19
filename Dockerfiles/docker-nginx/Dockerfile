@@ -20,7 +20,8 @@ RUN set -x                                                         && \
     wget -q https://nginx.org/download/nginx-${VERSION}.tar.gz     && \
     wget -q https://nginx.org/download/nginx-${VERSION}.tar.gz.asc && \
     gpg --verify nginx-${VERSION}.tar.gz.asc                       && \
-    tar -xf nginx-${VERSION}.tar.gz                                
+    tar -xf nginx-${VERSION}.tar.gz                                && \
+    rm -f nginx-${VERSION}.tar.*
 
 WORKDIR /tmp/nginx-${VERSION}
 
