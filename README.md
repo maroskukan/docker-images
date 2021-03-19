@@ -800,10 +800,19 @@ Now verify image size, run a new container and verify the application.
 ```bash
 # Verify image size
 docker image ls nginx:1.18.0
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+nginx        1.18.0    7a3df61de3f8   48 seconds ago   1.25MB
 # Run a container
 docker container run -d -p 8080:80 nginx:1.18.0
+9b6f7e05795883fe6624c23c4e7085470e9d63a7ce9eea06ec3c613c05f9f960
 # Verify application
 curl -I localhost:8080
+HTTP/1.1 200 OK
+Server: nginx/1.18.0
+Date: Fri, 19 Mar 2021 12:16:06 GMT
+Content-Type: text/html
+Connection: keep-alive
 # Verify container logs
 docker logs $(docker ps -q)
+172.17.0.1 - - [19/Mar/2021:12:16:06 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.68.0"
 ``` 
