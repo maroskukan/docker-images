@@ -28,6 +28,8 @@
   - [Tagging and Pushing Images](#tagging-and-pushing-images)
     - [Registries and repositories](#registries-and-repositories)
     - [Fully Qualified Docker Image Name](#fully-qualified-docker-image-name)
+    - [Tagging Image](#tagging-image)
+    - [Pushing Image](#pushing-image)
 
 ## Introduction
 
@@ -853,3 +855,53 @@ Some examples of image names and their meaning can be found below. Notice how th
 **localhost:5000/nginx:1.18.0** - Registry host: `localhost`, port `5000`, namespace: `none`, repository: `nginx`, tag: `1.18.0`
 
 
+### Tagging Image
+
+To tag an existing image that is available in local cache, use `docker image tag` command. The first argument specifies the source image name or ID and the second argument defines the target name.
+
+```bash
+# Using Image ID 
+docker image tag 7a3df61de3f8 maroskukan/nginx
+# Using Image name
+docker image tag nginx:1.18.0 maroskukan/nginx:1.18.0
+```
+
+### Pushing Image
+
+In order to push image to registry use `docker image push` command. In example below, we are pushing an image to Docker Hub. 
+If your registry credentials are not cached, you may need to use `docker login` with `-u` option in order to login to Docker Hub.
+
+```bash
+docker image push maroskukan/nginx:1.18.0
+The push refers to repository [docker.io/maroskukan/nginx]
+8e086b49cecc: Pushed 
+9b1865d31901: Pushed 
+3cee42ecc325: Pushed 
+55155f7103fd: Pushed
+1.18.0: digest: sha256:613685ef083f86e210af0d6559758b143c63fe47c0eba5c875b511c22a9e42c6 size: 1150
+```
+
+It may take a moment to index your newly pushed image at Docker Hub. Once it is available you can list it using `docker search` comamnd.
+
+```bash
+docker search maroskukan/nginx
+```
+
+If you don't like waiting, you can use the `dockerhub_list_image.sh` script located in `scripts` folder to list all available images for given username.
+
+```bash
+./dockerhub_list_images.sh
+Credentials Loaded Sucessfully
+Repository List Loaded Sucessfully
+
+User maroskukan has following Docker Images
+maroskukan/dockerbuild:latest
+maroskukan/dockerbuild:1.0.1
+maroskukan/dockerbuild:1.0.0
+maroskukan/ovftool:latest
+maroskukan/ansible:latest
+maroskukan/docker101tutorial:latest
+maroskukan/go-sample:latest
+maroskukan/pi:bday7
+maroskukan/nginx:1.18.0
+```
