@@ -25,6 +25,9 @@
     - [Writing Docker File](#writing-docker-file)
     - [Building an Image](#building-an-image-1)
     - [Multi-stage Image Builds](#multi-stage-image-builds)
+  - [Tagging and Pushing Images](#tagging-and-pushing-images)
+    - [Registries and repositories](#registries-and-repositories)
+    - [Fully Qualified Docker Image Name](#fully-qualified-docker-image-name)
 
 ## Introduction
 
@@ -816,3 +819,37 @@ Connection: keep-alive
 docker logs $(docker ps -q)
 172.17.0.1 - - [19/Mar/2021:12:16:06 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.68.0"
 ``` 
+
+
+## Tagging and Pushing Images
+
+### Registries and repositories
+
+Container registry is a place for storing and managing images. [Docker Hub](https://hub.docker.com/) is one of the largest and most pupular Docker registry. 
+
+A registry hosts repositories that contain application related files, like images and metadata. Some pulular repositries hosted on Docker Hub include [Alpine](https://hub.docker.com/_/alpine), [Ubuntu](https://hub.docker.com/_/ubuntu), and [Python](https://hub.docker.com/_/python).
+
+Each image is identified by `ID` such as `f63181f19b2f` and one or more associated `Tags` such as `latest`, or `20.04`.
+
+### Fully Qualified Docker Image Name
+
+When we built and tagged Nginx image in previous section, we used a short name which was a combination of application and version for an easy reference such as `nginx:1.18.0`. However, the Fully Qualified Docker Image Name can include many more fields, such as:
+
+```
+[registry-host[:port]/][namespace/]repository[:tag|@digest]
+```
+
+Below is an explanation for each field:
+- **registry hostname** - Identifies the source from where the image is pulled from or pushed to. The registry host can be omitted in case of using Docker Hub as it is the default.Some other examples include `quay.io`, `registry.mycorp.com`, `localhost:5000`. 
+- **namespace** - Defines unique namespace. If an image hosted in Docker Hub does not include one, it usually means that it is an official image. If it does, it could refer to username, department, business unit or organization. For example `library`, `mkukan-docker`, `ops`, `mycorp`.
+- **repository** - Is a mandatory component, it is applied to same set of images. For example it referes to software application or utility. Some examples include `alpine`, `ubuntu`, `nginx`, `python`.
+- **tag** - Tag can be used to futher describe an image. If an image hosted in Docker Hub does not include one, it automatically appends `latest`. Tag can also refer to underlying OS version used to build the image for example `alpine`, or `ubuntu` or it can define the application version `v1.2.1`, `v2.0.0`. Multiple Images can point to same image.
+
+Some examples of image names and their meaning can be found below. Notice how the two ubuntu examples point to same image.
+
+**ubuntu** - Registry host: `docker.io`, namespace: `library`, repository: `ubuntu`, tag: `latest`
+**docker.io/library/ubuntu:latest** Registry host: `docker.io`, namespace: `library`, repository: `ubuntu`, tag: `latest`
+**quay.io/prometheus/prometheus:v2.25.2** Registry host: `quay.io`, namespace: `prometheus`, repository: `prometheus`, tag: `v2.25.2`
+**localhost:5000/nginx:1.18.0** - Registry host: `localhost`, port `5000`, namespace: `none`, repository: `nginx`, tag: `1.18.0`
+
+
