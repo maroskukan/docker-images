@@ -44,6 +44,7 @@ Docker image provides the following key features:
 - [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 - [Install python package in Dockerfile](https://stackoverflow.com/questions/50333650/install-python-package-in-docker-file/50339177)
 - [View logs for a container or service](https://docs.docker.com/config/containers/logging/)
+- [Dealing with none images](https://www.projectatomic.io/blog/2015/07/what-are-docker-none-none-images/)
 
 ## Building an image
 
