@@ -30,6 +30,8 @@
     - [Fully Qualified Docker Image Name](#fully-qualified-docker-image-name)
     - [Tagging Image](#tagging-image)
     - [Pushing Image](#pushing-image)
+  - [Tips](#tips)
+    - [Attaching and Detaching](#attaching-and-detaching)
 
 ## Introduction
 
@@ -45,6 +47,7 @@ Docker image provides the following key features:
 - [Install python package in Dockerfile](https://stackoverflow.com/questions/50333650/install-python-package-in-docker-file/50339177)
 - [View logs for a container or service](https://docs.docker.com/config/containers/logging/)
 - [Dealing with none images](https://www.projectatomic.io/blog/2015/07/what-are-docker-none-none-images/)
+- [Docker Attach](https://docs.docker.com/engine/reference/commandline/attach/)
 
 ## Building an image
 
@@ -906,3 +909,23 @@ maroskukan/go-sample:latest
 maroskukan/pi:bday7
 maroskukan/nginx:1.18.0
 ```
+
+## Tips
+
+### Attaching and Detaching 
+
+When you start a container in background mode `-d` and you need to attach local standard input, output and error streams to a running container, you can leverage the `docker attach` command.
+
+```bash
+# Start a container in detach mode
+docker run -d -p 8080:80 maroskukan/nodejs-sample:latest
+783ed359ac0937cb5da534868be1765ea770c5d792c9c1df6d195a6b1a70cb46
+
+# Attach streams
+docker attach 783e
+::ffff:172.17.0.1 - - [24/Mar/2021:08:41:54 +0000] "GET / HTTP/1.1" 200 563 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
+```
+
+Do detach without exiting the main container process, use `CTRL+P+Q` while attached.
+
+
