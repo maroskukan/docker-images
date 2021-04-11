@@ -1,19 +1,28 @@
 # Docker Nmap Image
 
-The Dockerfile is prepared for containerized [nmap](https://nmap.org) application.
+The Dockerfile is prepared for containerized [nmap](https://nmap.org) application that is build from latest source code available at [nmap repository](https://github.com/nmap/nmap). The resulting image size is around 288 MB in size.
 
 ## How to build this image
 
 Build and tag the image pointing context to current working directory. 
 
 ```bash
-docker build -t maroskukan/nmap:latest .
+docker build -t maroskukan/nmap-from-source:latest .
+```
+
+Verify the image properties.
+
+```bash
+docker image ls --format \
+'table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}' maroskukan/nmap-from-source
+REPOSITORY                    TAG       IMAGE ID       SIZE
+maroskukan/nmap-from-source   latest    28c9ec785525   36.8MB
 ```
 
 Verify that application works by running a container from image.
 
 ```bash
-docker container run -it --rm maroskukan/nmap:latest
+docker container run -it --rm maroskukan/nmap-from-source:latest
 Nmap 7.91 ( https://nmap.org )
 Usage: nmap [Scan Type(s)] [Options] {target specification}
 TARGET SPECIFICATION:
