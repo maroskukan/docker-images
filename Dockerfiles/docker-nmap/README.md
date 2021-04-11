@@ -12,6 +12,15 @@ Build and tag the image pointing context to current working directory.
 docker build -t maroskukan/nmap:latest .
 ```
 
+Verify the image.
+
+```bash
+docker image ls --format \
+'table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}' maroskukan/nmap
+REPOSITORY        TAG       IMAGE ID       SIZE
+maroskukan/nmap   latest    08ca5af64157   20.7MB
+```
+
 Verify that application works by running a container from image.
 
 ```bash
