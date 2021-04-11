@@ -1,6 +1,8 @@
 # Docker Nmap Image
 
-The Dockerfile is prepared for containerized [nmap](https://nmap.org) application.
+The Dockerfile is prepared for containerized [nmap](https://nmap.org) application that is installed from [Apk Nmap package](https://pkgs.alpinelinux.org/package/v3.13/main/x86_64/nmap)
+
+The resulting image size is around 21 MB in size.
 
 ## How to build this image
 
