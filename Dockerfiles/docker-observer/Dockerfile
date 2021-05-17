@@ -4,7 +4,7 @@ LABEL org.opencontainers.image.title="Observer" \
       org.opencontainers.image.description="Monitors directory activity" \ 
       org.opencontainers.image.authors="@maroskukan"
 
-# Install requirements
+# Install dependencies
 COPY requirements.txt /tmp/
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt
