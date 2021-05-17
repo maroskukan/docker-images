@@ -31,14 +31,14 @@ def get_books():
     return jsonify({'books': books})
 
 
-@app.route('/books', methods = ['POST'])
+@app.route('/books', methods=['POST'])
 def add_book():
     request_data = request.get_json()
     if(validBookObject(request_data)):
         new_book = {
-            "name": request_data['name'],
-            "price": request_data['price'],
-            "isbn": request_data['isbn']
+            'name': request_data['name'],
+            'price': request_data['price'],
+            'isbn': request_data['isbn']
         }
         books.insert(0, new_book)
         response = Response("",
@@ -67,5 +67,27 @@ def get_book_by_isbn(isbn):
                 'price': book['price']
             }
     return jsonify(return_value)
+
+
+
+@app.route('/books/<int:isbn>', methods=['PUT'])
+def replace_book(isbn):
+    request_data = request.get_json()
+    new_book = {
+        'name': request_data['name'],
+        'price': request_data['price'],
+        'isbn': isbn
+    }
+    i = 0
+    for book in books:
+        currentIsbn = book['isbn']
+        if currentIsbn == isbn:
+            books[i] = new_book
+        i += 1
+    response = Response("",
+                        status=204)
+    
+    return response
+
 
 app.run(port=5000)
