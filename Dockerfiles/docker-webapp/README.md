@@ -7,7 +7,10 @@ The `docker-compose.yml` file is prepared to demostrate usage of managing multi 
 Build and tag the image pointing context to current working directory. 
 
 ```bash
-docker-compose up
+# Build the image
+docker-compose build
+
+# Start the containers
 Starting docker-webapp_redis_1  ... done
 Starting docker-webapp_web-fe_1 ... done
 Attaching to docker-webapp_redis_1, docker-webapp_web-fe_1
@@ -36,7 +39,7 @@ web-fe_1  |  * Debugger PIN: 416-851-558
 
 ```bash
 for try in {1..3}; do curl localhost:5000; done
-Hit refresh if you think Sunderland are the greatest football team in the world. You've only refreshed 1 times. REFRESH MORE!!!
-Hit refresh if you think Sunderland are the greatest football team in the world. You've only refreshed 2 times. REFRESH MORE!!!
-Hit refresh if you think Sunderland are the greatest football team in the world. You've only refreshed 3 times. REFRESH MORE!!!
+Hit refresh. You've only refreshed 1 times.
+Hit refresh. You've only refreshed 2 times.
+Hit refresh. You've only refreshed 3 times.
 ```
