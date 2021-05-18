@@ -1,4 +1,4 @@
-FROM python:3-slim
+FROM python:3.9.2-alpine
 
 LABEL org.opencontainers.image.title="Observer" \             
       org.opencontainers.image.description="Monitors directory activity" \ 
