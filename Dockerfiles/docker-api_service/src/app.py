@@ -1,6 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import json
+import os
 from types import MethodType
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, redirect
+from flask.helpers import url_for
+
 
 app = Flask(__name__)
 
@@ -32,12 +38,18 @@ def valid_put_request_data(request_data):
     else:
         return False
 
-@app.route('/books')
+
+@app.route('/')
+def get_root():
+    return redirect(url_for('get_books'))
+
+
+@app.route('/api/books')
 def get_books():
     return jsonify({'books': books})
 
 
-@app.route('/books/<int:isbn>')
+@app.route('/api/books/<int:isbn>')
 def get_book_by_isbn(isbn):
     return_value = {}
     for book in books:
@@ -49,7 +61,7 @@ def get_book_by_isbn(isbn):
     return jsonify(return_value)
 
 
-@app.route('/books', methods=['POST'])
+@app.route('/api/books', methods=['POST'])
 def add_book():
     request_data = request.get_json()
     if(validBookObject(request_data)):
@@ -62,7 +74,7 @@ def add_book():
         response = Response("",
                             status=201,
                             mimetype='application/json')
-        response.headers['Location'] = "/books/" + str(new_book['isbn'])
+        response.headers['Location'] = "/api/books/" + str(new_book['isbn'])
     else:
         invalidBookObjectErrorMsg = {
             "error": "Invalid book object passwd in request",
@@ -74,7 +86,7 @@ def add_book():
     return response
 
 
-@app.route('/books/<int:isbn>', methods=['PUT'])
+@app.route('/api/books/<int:isbn>', methods=['PUT'])
 def replace_book(isbn):
     request_data = request.get_json()
     if not valid_put_request_data(request_data):
@@ -104,7 +116,7 @@ def replace_book(isbn):
     return response
 
 
-@app.route('/books/<int:isbn>', methods=['PATCH'])
+@app.route('/api/books/<int:isbn>', methods=['PATCH'])
 def update_book(isbn):
     request_data = request.get_json()
     update_book = {}
@@ -117,12 +129,12 @@ def update_book(isbn):
             book.update(update_book)
     response = Response("",
                         status=204)
-    response.headers['Location'] = "/books/" + str(isbn)
+    response.headers['Location'] = "/api/books/" + str(isbn)
 
     return response
 
 
-@app.route('/books/<int:isbn>', methods=['DELETE'])
+@app.route('/api/books/<int:isbn>', methods=['DELETE'])
 def delete_book(isbn):
     i = 0
     for book in books:
@@ -140,5 +152,6 @@ def delete_book(isbn):
                         mimetype='application/json')
     return response
 
-
-app.run(port=5000)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
