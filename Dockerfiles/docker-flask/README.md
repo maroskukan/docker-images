@@ -33,7 +33,7 @@ curl localhost:8000
 <head>
     <meta charset="UTF-8">
     <title>Flask Web App</title>
-    <link rel= "stylesheet" type= "text/css" href= "/css/main.css">
+    <link rel="stylesheet" type= "text/css" href= "/css/main.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300" >
 </head>
 <body>
@@ -53,5 +53,5 @@ curl localhost:8000
         </div>
     </div>
 </body>
-</html>%
+</html>
 ```
