@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:3.9.5-alpine
 
 LABEL org.opencontainers.image.title="Flask web app with Redis" \             
       org.opencontainers.image.description="Stores and displays hitcount" \ 

@@ -1,4 +1,4 @@
-FROM python:3.9.2-alpine as builder
+FROM python:3.9.5-alpine as builder
 
 LABEL org.opencontainers.image.title="Library REST API Service" \             
       org.opencontainers.image.description="Provides REST API Service for managing books" \ 

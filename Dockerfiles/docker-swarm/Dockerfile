@@ -1,5 +1,4 @@
-# Base image
-FROM python:alpine
+FROM python:3.9.5-alpine
 
 # Add app code to /code inside container image
 ADD . /code

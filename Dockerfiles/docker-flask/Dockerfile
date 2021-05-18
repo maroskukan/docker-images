@@ -1,4 +1,4 @@
-FROM python:3.9.2-alpine
+FROM python:3.9.5-alpine
 
 LABEL org.opencontainers.image.title="Flask Hello World Web App" \             
       org.opencontainers.image.description="Renders HTML code from template" \ 
