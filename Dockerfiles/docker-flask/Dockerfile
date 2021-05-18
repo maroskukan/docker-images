@@ -1,8 +1,15 @@
 FROM python:3.9.2-alpine
 
-WORKDIR /project
-COPY . /project
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+LABEL org.opencontainers.image.title="Flask Hello World Web App" \             
+      org.opencontainers.image.description="Renders HTML code from template" \ 
+      org.opencontainers.image.authors="@maroskukan"
 
+# Install dependencies
+COPY requirements.txt /tmp/
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+COPY src/ /project
+
+WORKDIR /project
 CMD ["python","app.py"]
