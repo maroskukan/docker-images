@@ -6,6 +6,55 @@
 	},
 	"item": [
 		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Basic Tests\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"\r",
+							"// Save the API Response as a variable\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"// Store token value as collection variable\r",
+							"pm.collectionVariables.set(\"token\", response.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_ENDPOINT}}/login",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get All Books",
 			"request": {
 				"method": "GET",
@@ -76,13 +125,19 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books",
+					"raw": "{{API_ENDPOINT}}/api/books?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
 					"path": [
 						"api",
 						"books"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -103,13 +158,19 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books",
+					"raw": "{{API_ENDPOINT}}/api/books?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
 					"path": [
 						"api",
 						"books"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -130,7 +191,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books/{{book_isbn}}",
+					"raw": "{{API_ENDPOINT}}/api/books/{{book_isbn}}?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
@@ -138,6 +199,12 @@
 						"api",
 						"books",
 						"{{book_isbn}}"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -158,7 +225,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books/9780988262509",
+					"raw": "{{API_ENDPOINT}}/api/books/9780988262509?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
@@ -166,6 +233,12 @@
 						"api",
 						"books",
 						"9780988262509"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -186,7 +259,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books/{{book_isbn}}",
+					"raw": "{{API_ENDPOINT}}/api/books/{{book_isbn}}?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
@@ -194,6 +267,12 @@
 						"api",
 						"books",
 						"{{book_isbn}}"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -214,7 +293,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books/9780988262509",
+					"raw": "{{API_ENDPOINT}}/api/books/9780988262509?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
@@ -222,6 +301,12 @@
 						"api",
 						"books",
 						"9780988262509"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -242,7 +327,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books/{{book_isbn}}",
+					"raw": "{{API_ENDPOINT}}/api/books/{{book_isbn}}?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
@@ -250,6 +335,12 @@
 						"api",
 						"books",
 						"{{book_isbn}}"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -270,7 +361,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{API_ENDPOINT}}/api/books/9780988262509",
+					"raw": "{{API_ENDPOINT}}/api/books/9780988262509?token={{token}}",
 					"host": [
 						"{{API_ENDPOINT}}"
 					],
@@ -278,6 +369,12 @@
 						"api",
 						"books",
 						"9780988262509"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
 					]
 				}
 			},
@@ -319,6 +416,18 @@
 		},
 		{
 			"key": "book_isbn",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "token",
 			"value": ""
 		}
 	]
