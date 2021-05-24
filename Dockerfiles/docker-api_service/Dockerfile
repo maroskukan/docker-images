@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.title="Library REST API Service" \
       org.opencontainers.image.authors="@maroskukan"
 
 # Install build tools, libraries, and utilities
-RUN apk add --no-cache build-base                                                    
+RUN apk add --no-cache build-base                                                 
 
 # Install dependencies
 COPY requirements.txt /tmp/
@@ -14,7 +14,7 @@ RUN pip install --user --upgrade pip && \
 
 COPY src/ /project
 
-FROM python:3.9.2-alpine
+FROM python:3.9.5-alpine
 COPY --from=builder /root/.local /root/.local
 COPY --from=builder /project /project
 

@@ -1,27 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from datetime import datetime, timedelta
 import json
 import os
 #from types import MethodType
 from flask import Flask, jsonify, request, Response, redirect
 from flask.helpers import url_for
+from jwt import algorithms
 
 from book_model import *
+from user_model import *
 from settings import *
+import jwt
+from functools import wraps
 
-# books = [
-#     {
-#         'name': 'Green Eggs and Ham',
-#         'price': 7.99,
-#         'isbn': 978039400165
-#     },
-#     {
-#         'name': 'The Cat In The Hat',
-#         'price': 6.99,
-#         'isbn': 9782371000193
-#     }
-# ]
+app.config['SECRET_KEY'] = 'meow'
+
 
 def validBookObject(bookObject):
     if ("name" in bookObject and
@@ -46,13 +41,57 @@ def valid_patch_request_data(request_data):
         return False
 
 
+def token_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        token = request.args.get('token')
+        try:
+            jwt.decode(token, app.config['SECRET_KEY'], algorithms='HS256')
+            return f(*args, **kwargs)
+        except:
+            auth_error_msg = {
+                "error": "Need a valid token to view this page."
+            }
+            response = Response(json.dumps(auth_error_msg),
+                                status=401,
+                                mimetype='application/json')
+            return response
+
+    return wrapper
+
+
 @app.route('/')
 def get_root():
     return redirect(url_for('get_books'))
 
 
+@app.route('/login', methods=['POST'])
+def get_token():
+    request_data = request.get_json()
+    username = str(request_data['username'])
+    password = str(request_data['password'])
+
+    if User.get_user(username, password):
+        expiration_date = datetime.utcnow() + timedelta(seconds=1200)
+        token = jwt.encode({'exp': expiration_date}, app.config['SECRET_KEY'], algorithm='HS256')
+        auth_success_msg = {
+            "token": token
+        }
+        response = Response(json.dumps(auth_success_msg),
+                            status=200,
+                            mimetype='application/json')
+    else:
+        auth_error_msg = {
+            "error": "Invalid username or password."
+        }
+        response = Response(json.dumps(auth_error_msg),
+                            status=401,
+                            mimetype='application/json')
+    return response
+
+
 @app.route('/api/books')
-def get_books():
+def get_books():    
     return jsonify({'books': Book.get_all_books()})
 
 
@@ -73,6 +112,7 @@ def get_book_by_isbn(isbn):
     return response
 
 @app.route('/api/books', methods=['POST'])
+@token_required
 def add_book():    
     request_data = request.get_json()
     if(validBookObject(request_data)):
@@ -106,6 +146,7 @@ def add_book():
 
 
 @app.route('/api/books/<int:isbn>', methods=['PUT'])
+@token_required
 def replace_book(isbn):
     book_to_be_updated = Book.get_book(isbn)
     if book_to_be_updated is None:
@@ -139,6 +180,7 @@ def replace_book(isbn):
 
 
 @app.route('/api/books/<int:isbn>', methods=['PATCH'])
+@token_required
 def update_book(isbn):
     book_to_be_patched = Book.get_book(isbn)
     if book_to_be_patched is None:
@@ -169,6 +211,7 @@ def update_book(isbn):
 
 
 @app.route('/api/books/<int:isbn>', methods=['DELETE'])
+@token_required
 def delete_book(isbn):
     book_to_be_deleted = Book.get_book(isbn)
     if book_to_be_deleted is None:
