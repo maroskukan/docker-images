@@ -32,6 +32,7 @@
     - [Pushing Image](#pushing-image)
   - [Tips](#tips)
     - [Attaching and Detaching](#attaching-and-detaching)
+    - [Installing docker-compose](#installing-docker-compose)
 
 ## Introduction
 
@@ -571,14 +572,14 @@ ONBUILD <instruction>
 
 There are number of instructions which add additional medata to the image.
 
-| **Instruction** | **Purpose** |
-| --------------- | ----------- |
-| EXPOSE | Specifies TCP/UDP ports for container |
-| LABEL | Adds a static label to the image |
-| STOPSIGNAL | Defines the signal to stop the container's process |
-| USER | Sets the container's user |
-| VOLUME | Specifies a mount point for persistent data |
-| WORKDIR | Sets the working directory |
+| **Instruction** | **Purpose**                                        |
+| --------------- | -------------------------------------------------- |
+| EXPOSE          | Specifies TCP/UDP ports for container              |
+| LABEL           | Adds a static label to the image                   |
+| STOPSIGNAL      | Defines the signal to stop the container's process |
+| USER            | Sets the container's user                          |
+| VOLUME          | Specifies a mount point for persistent data        |
+| WORKDIR         | Sets the working directory                         |
 
 
 ## Creating Nginx Docker Image
@@ -912,7 +913,7 @@ maroskukan/nginx:1.18.0
 
 ## Tips
 
-### Attaching and Detaching 
+### Attaching and Detaching
 
 When you start a container in background mode `-d` and you need to attach local standard input, output and error streams to a running container, you can leverage the `docker attach` command.
 
@@ -928,4 +929,17 @@ docker attach 783e
 
 Do detach without exiting the main container process, use `CTRL+P+Q` while attached.
 
+### Installing docker-compose
 
+In some cases, the distribution repository does not contain the latest version of docker-compose. For example Ubuntu 20.04 contained version 1.25.0-1 which does not understand docker-compose files at version 3.8. In order to install later version you can perform these manual steps.
+
+```bash
+VERSION="2.6.1"
+ARCH="x86_64"
+
+curl -fsSL \
+     "https://github.com/docker/compose/releases/download/v${VERSION}/docker-compose-linux-${ARCH}" \
+     -o "docker-compose"
+sudo cp docker-compose /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
