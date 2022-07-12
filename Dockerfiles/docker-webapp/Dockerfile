@@ -1,8 +1,8 @@
-FROM python:3.9.5-alpine
+FROM python:3.10.5-alpine
 
-LABEL org.opencontainers.image.title="Flask web app with Redis" \             
-      org.opencontainers.image.description="Stores and displays hitcount" \ 
-      org.opencontainers.image.authors="@maroskukan"
+LABEL org.opencontainers.image.title="Flask web app with Redis" \
+    org.opencontainers.image.description="Stores and displays hitcount" \
+    org.opencontainers.image.authors="@maroskukan"
 
 # Install dependencies
 COPY requirements.txt /tmp/

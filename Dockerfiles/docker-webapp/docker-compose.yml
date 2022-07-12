@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  web-fe:
+  web:
     build: .
     command: python app.py
     ports:
@@ -12,10 +12,15 @@ services:
       - type: volume
         source: counter-vol
         target: /usr/src/app
-  redis:
+    container_name: web
+    depends_on:
+      - "db"
+
+  db:
     image: "redis:alpine"
     networks:
       counter-net:
+    container_name: db
 
 networks:
   counter-net:
