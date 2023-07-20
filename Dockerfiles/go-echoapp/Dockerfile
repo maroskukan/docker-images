@@ -21,5 +21,8 @@ COPY --from=builder /app/app .
 # Expose port 80 to access the Go web application
 EXPOSE 80
 
+# Set the non-root user to run the container
+USER 1000:1000
+
 # Start the Go web application
 CMD ["./app"]
