@@ -13,8 +13,17 @@ Start the stack by pointing context to current working directory. The `app` serv
 docker-compose up -d
 ```
 
+## Test
+
+Request:
+
 ```bash
+# For loop to create three request
 for try in {1..3}; do curl localhost:8080; done
+```
+
+Response:
+```bash
 Hit refresh. You've only refreshed 1 times.
 Hit refresh. You've only refreshed 2 times.
 Hit refresh. You've only refreshed 3 times.
