@@ -31,5 +31,8 @@ EXPOSE 80
 ENV REDIS_HOST db
 ENV REDIS_PORT 6379
 
+# Set the non-root user to run the container
+USER 1000:1000
+
 # Start the Go web application
 CMD ["./app"]
