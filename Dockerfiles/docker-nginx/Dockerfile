@@ -1,37 +1,31 @@
-FROM alpine:3.13.2 as build
+FROM alpine:3.20.3 as build
 
 # Define build argument and default value for version
-ARG VERSION=1.18.0
+ARG VERSION=1.26
 
 # Install build tools, libraries, and utilities
 RUN apk add --no-cache --virtual .build-deps                          \
-        build-base                                                    \
-        gnupg                                                         \
-        pcre-dev                                                      \
-        wget                                                          \
-        zlib-dev                                                      \
-        zlib-static
+        g++                                                           \
+        git                                                           \
+        make                                                          \
+        linux-headers                                                 \
+        pcre-dev
 
 # Retrieve, verify and unpact Nginx source
-RUN set -x                                                         && \
-    cd /tmp                                                        && \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys            \
-        B0F4253373F8F6F510D42178520A9993A1C052F8                   && \
-    wget -q https://nginx.org/download/nginx-${VERSION}.tar.gz     && \
-    wget -q https://nginx.org/download/nginx-${VERSION}.tar.gz.asc && \
-    gpg --verify nginx-${VERSION}.tar.gz.asc                       && \
-    tar -xf nginx-${VERSION}.tar.gz                                && \
-    rm -f nginx-${VERSION}.tar.*
+RUN cd /tmp                                                        && \
+    git clone -b stable-${VERSION} --single-branch                    \
+              https://github.com/nginx/nginx.git
 
-WORKDIR /tmp/nginx-${VERSION}
+WORKDIR /tmp/nginx
 
 # Build and install nginx
-RUN ./configure                                                       \
+RUN ./auto/configure                                                  \
         --with-ld-opt="-static"                                       \
+        --without-http_gzip_module                                    \
         --with-http_sub_module                                     && \
     make install                                                   && \
     strip /usr/local/nginx/sbin/nginx
-   
+
 # Symlink access and error logs to /dev/stdout and /dev/stderr,
 # in order to make use of Docker's logging mechanism
 RUN ln -sf /dev/stdout /usr/local/nginx/logs/access.log            && \
